@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днем Рождения!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #111827;
+            --accent-color: #f87171;
+            --photo-border-color: #ffffff;
+            --text-color: #f3f4f6;
+            --header-text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            transition: background-color 0.8s ease;
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+            z-index: 1;
+        }
+        .content-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            background-color: var(--bg-color);
+            transition: opacity 0.7s ease-in-out, background-color 0.8s ease;
+            overflow-y: auto;
+        }
+        .content-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .close-button {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--header-text-color);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 15;
+            line-height: 1;
+            text-shadow: 0 0 8px rgba(0,0,0,0.7);
+            transition: transform 0.2s, color 0.2s;
+        }
+        .close-button:hover {
+            transform: scale(1.2);
+            color: var(--accent-color);
+        }
+        .content-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10vh 2rem;
+            position: relative;
+            z-index: 3;
+        }
+        .text-container {
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            position: relative;
+            margin-bottom: 15vh;
+        }
+        .photos-container {
+            padding-bottom: 15vh;
+        }
+        .photo {
+            opacity: 0;
+            transform: translateY(60px) rotate(0deg) scale(0.9);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.8s ease;
+            transition-delay: var(--delay, 0s);
+            will-change: opacity, transform;
+            width: clamp(280px, 50%, 380px);
+            border: 5px solid var(--photo-border-color);
+            border-radius: 0rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .photo.is-visible {
+            opacity: 1;
+            transform: translateY(0) rotate(var(--rotation)) scale(1);
+        }
+        .photo:nth-child(odd) {
+            margin-left: 5%;
+            margin-right: auto;
+        }
+        .photo:nth-child(even) {
+            margin-right: 5%;
+            margin-left: auto;
+        }
+        .photo + .photo {
+            margin-top: -8vh;
+        }
+        #final-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            width: 100%;
+        }
+        #final-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 12vw, 8rem);
+            color: var(--header-text-color);
+            text-shadow: none;
+            transition: color 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+            width: 100%;
+        }
+        .title-line {
+            display: block;
+            white-space: nowrap;
+        }
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 10;
+            font-size: 0.9rem;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="three-canvas"></canvas>
+
+    <div class="instructions" id="instructions">
+    </div>
+
+    <div id="content-overlay" class="content-overlay">
+        <button id="close-button" class="close-button" aria-label="Закрыть">&times;</button>
+        <div class="content-wrapper" id="content-wrapper">
+            <div class="text-container">
+                <h2 class="text-3xl font-bold mb-4 text-center" style="color: var(--header-text-color);">Дорогой Лёша!</h2>
+                <p class="leading-relaxed">
+                    Хоть мой навык красноречия не очень сильно вкачан, в этот день поздравляю тебя с днем  рождения! 
+                    <br><br>
+                    Я желаю тебе крепкого здоровья, успехов в новых начинаниях, ещё больше ярких и креативных идей  и всего самого наилучшего!
+                    <br><br>
+                    Я  всегда очень восхищался тем фактом, что собрал вокруг себя столько замечательны, разных и увлеченных аниме людей! ещё я поражаюсь что ты столько сил. времени и душу в аниме ячейку!
+                    <br><br>
+                    я очень рад что, такого класного человека, как ты. Вепрь в мою веру в тебя и еще раз с днем рождения!
+                    <br><br>
+                    暖かいご挨拶を込めて、アルチョム
+                </p>
+            </div>
+
+            <div class="photos-container">
+            </div>
+
+            <div id="final-section">
+                <h1 id="final-title">
+                    <span id="title-line-1" class="title-line">С ДНЕМ</span>
+                    <span id="title-line-2" class="title-line">РОЖДЕНИЯ!</span>
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.157.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('three-canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        camera.position.z = 5;
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        const posterWidth = 3;
+        const posterHeight = 4.5;
+        const posterDepth = 0.1;
+        const geometry = new THREE.BoxGeometry(posterWidth, posterHeight, posterDepth);
+        
+        const loader = new THREE.TextureLoader();
+        const frontTextureUrl = './photos/1.png';
+        
+        const colorThief = new ColorThief();
+
+        const frontTexture = loader.load(frontTextureUrl, (texture) => {
+            const img = texture.image;
+            img.crossOrigin = "Anonymous";
+            if (img.complete) {
+                applyThemeFromImage(img);
+            } else {
+                img.onload = () => {
+                    applyThemeFromImage(img);
+                };
+            }
+        });
+
+        function applyThemeFromImage(img) {
+            try {
+                const paletteRgb = colorThief.getPalette(img, 5);
+                const toRgbStr = (rgb) => `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                const getBrightness = (rgb) => (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+                paletteRgb.sort((a, b) => getBrightness(a) - getBrightness(b));
+                
+                const darkestColor = toRgbStr(paletteRgb[0]);
+                const brightestColor = toRgbStr(paletteRgb[paletteRgb.length - 1]);
+                const accentColor = toRgbStr(paletteRgb[Math.floor(paletteRgb.length / 2)]);
+
+                document.documentElement.style.setProperty('--bg-color', darkestColor);
+                document.documentElement.style.setProperty('--accent-color', accentColor);
+                document.documentElement.style.setProperty('--photo-border-color', brightestColor);
+                document.documentElement.style.setProperty('--text-color', brightestColor);
+                document.documentElement.style.setProperty('--header-text-color', brightestColor);
+            } catch (e) {
+                console.error("Ошибка ColorThief: Не удалось проанализировать изображение. Убедитесь, что вы используете локальный сервер.", e);
+            }
+        }
+
+        const placeholderUrl = (text) => `./photos/2.png`;
+        const materials = [
+            new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.5, metalness: 0.1 }),
+            new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.5, metalness: 0.1 }),
+            new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.5, metalness: 0.1 }),
+            new THREE.MeshStandardMaterial({ color: '#555555', roughness: 0.5, metalness: 0.1 }),
+            new THREE.MeshStandardMaterial({ map: frontTexture, roughness: 0.5, metalness: 0.1 }),
+            new THREE.MeshStandardMaterial({ map: loader.load(placeholderUrl('')), roughness: 0.5, metalness: 0.1 })
+        ];
+        const poster = new THREE.Mesh(geometry, materials);
+        scene.add(poster);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enablePan = false;
+        controls.minDistance = 3.5;
+        controls.maxDistance = 10;
+        controls.minPolarAngle = Math.PI / 4;
+        controls.maxPolarAngle = 3 * Math.PI / 4;
+
+        let isBackVisible = false;
+        let userManuallyClosed = false;
+        const contentOverlay = document.getElementById('content-overlay');
+        const instructions = document.getElementById('instructions');
+        const closeButton = document.getElementById('close-button');
+        const finalSection = document.getElementById('final-section');
+
+        function updateInstructionsText() {
+            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            instructions.textContent = isTouchDevice ? 'Крути постер пальцем!' : 'Крути постер мышкой (или пальцем)';
+        }
+        updateInstructionsText();
+
+        function adjustTitleWidth() {
+            const title = document.getElementById('final-title');
+            const line1 = document.getElementById('title-line-1');
+            const line2 = document.getElementById('title-line-2');
+            const textContainer = document.querySelector('.text-container');
+
+            title.style.fontSize = '';
+            line1.style.fontSize = '';
+
+            requestAnimationFrame(() => {
+                const containerWidth = textContainer.offsetWidth;
+                const line2Width = line2.offsetWidth;
+
+                if (containerWidth <= 0 || line2Width <= 0) return;
+
+                const baseFontSize = parseFloat(window.getComputedStyle(title).fontSize);
+                const scaleFactor = containerWidth / line2Width;
+                title.style.fontSize = `${baseFontSize * scaleFactor}px`;
+
+                requestAnimationFrame(() => {
+                    const finalLine2Width = line2.offsetWidth;
+                    const finalLine1Width = line1.offsetWidth;
+
+                    if (finalLine1Width > 0) {
+                        const line1CurrentFontSize = parseFloat(window.getComputedStyle(line1).fontSize);
+                        const line1Scale = finalLine2Width / finalLine1Width;
+                        line1.style.fontSize = `${line1CurrentFontSize * line1Scale}px`;
+                    }
+                });
+            });
+        }
+
+        const photoUrls = [
+            './photos/photo1.jpg',
+            './photos/photo2.jpg',
+            './photos/photo3.jpg',
+            './photos/photo4.jpg',
+            './photos/photo7.jpg',
+            './photos/photo6.jpg'
+        ];
+        
+        const photosContainer = document.querySelector('.photos-container');
+        photosContainer.innerHTML = ''; 
+        photoUrls.forEach(url => {
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'photo';
+            const rotation = Math.random() * 12 - 6;
+            photoDiv.style.setProperty('--rotation', `${rotation}deg`);
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'w-full h-full object-cover rounded-lg';
+            img.onerror = () => { img.src = 'https://placehold.co/600x400/ef4444/ffffff?text=Ошибка!'; };
+            photoDiv.appendChild(img);
+            photosContainer.appendChild(photoDiv);
+        });
+        
+        const allPhotos = document.querySelectorAll('.photo');
+        allPhotos.forEach((photo, index) => {
+            photo.style.setProperty('--delay', `${index * 150}ms`);
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { 
+                root: contentOverlay, 
+                threshold: 0.1 
+            });
+            observer.observe(photo);
+        });
+
+        let confettiFired = false;
+        const confettiObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !confettiFired) {
+                confettiFired = true;
+                const duration = 5 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+                const interval = setInterval(function() {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                    confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+                }, 250);
+            }
+        }, { 
+            root: contentOverlay, 
+            threshold: 0.5 
+        });
+        confettiObserver.observe(finalSection);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            const cameraDirection = new THREE.Vector3();
+            camera.getWorldDirection(cameraDirection);
+            const posterBackDirection = new THREE.Vector3(0, 0, 1);
+            poster.getWorldDirection(posterBackDirection);
+            const dot = cameraDirection.dot(posterBackDirection);
+
+            if (dot > 0.1 && !isBackVisible && !userManuallyClosed) {
+                isBackVisible = true;
+                contentOverlay.classList.add('visible');
+                instructions.style.opacity = '0';
+                adjustTitleWidth();
+            } else if (dot <= 0) {
+                if (userManuallyClosed) {
+                    userManuallyClosed = false;
+                }
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        closeButton.addEventListener('click', () => {
+            if (isBackVisible) {
+                isBackVisible = false;
+                userManuallyClosed = true;
+                contentOverlay.classList.remove('visible');
+                instructions.style.opacity = '1';
+
+                contentOverlay.scrollTop = 0;
+                allPhotos.forEach(p => p.classList.remove('is-visible'));
+                confettiFired = false;
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            if (isBackVisible) {
+                adjustTitleWidth();
+            }
+        });
+
+        animate();
+    </script>
+</body>
+</html>
